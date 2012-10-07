@@ -186,6 +186,8 @@ def files_resource(exec_action)
             recursive true
         end
         file "#{my_home}/#{f['path']}/#{f['name']}" do
+            owner new_resource.username
+            group Etc.getpwnam(new_resource.username).gid
             mode f['mode']
             content f['content']
             action :create
