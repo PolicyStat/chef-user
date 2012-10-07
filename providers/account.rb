@@ -33,6 +33,7 @@ action :create do
   dir_resource              :create
   authorized_keys_resource  :create
   keygen_resource           :create
+  files_resource            :create
 end
 
 action :remove do
@@ -47,6 +48,7 @@ action :modify do
   dir_resource              :create
   authorized_keys_resource  :create
   keygen_resource           :create
+  files_resource            :create
 end
 
 action :manage do
@@ -54,6 +56,7 @@ action :manage do
   dir_resource              :create
   authorized_keys_resource  :create
   keygen_resource           :create
+  files_resource            :create
 end
 
 action :lock do
@@ -61,6 +64,7 @@ action :lock do
   dir_resource              :create
   authorized_keys_resource  :create
   keygen_resource           :create
+  files_resource            :create
 end
 
 action :unlock do
@@ -68,6 +72,7 @@ action :unlock do
   dir_resource              :create
   authorized_keys_resource  :create
   keygen_resource           :create
+  files_resource            :create
 end
 
 private
@@ -170,4 +175,20 @@ def keygen_resource(exec_action)
       new_resource.updated_by_last_action(true) if r.updated_by_last_action?
     end
   end
+end
+
+def files_resource(exec_action)
+    my_home = @my_home
+    files = Array(new_resource.files)
+    files.each do |f|
+        directory "#{my_home}/#{f['path']}" do
+            owner new_resource.username
+            recursive true
+        end
+        file "#{my_home}/#{f['path']}/#{f['name']}" do
+            mode f['mode']
+            content f['content']
+            action :create
+        end
+    end
 end
